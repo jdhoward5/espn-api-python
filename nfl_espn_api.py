@@ -57,6 +57,11 @@ class EspnApi:
         r = requests.get(url, headers=self.hdr)
         return r.json()
     
+    def get_event_ids(self) -> list:
+        data = self.get_events()['items']
+        urls = [d['$ref'] for d in data]
+        return list(map(lambda url: urlparse(url).path.split('/')[-1], urls))
+    
     def event_info(self, event_id: str) -> any:
         url = f'{self.sport_core}/v2/sports/football/leagues/nfl/events/{event_id}'
         
@@ -437,7 +442,7 @@ class EspnTeam(EspnApi):
         super().__init__()
         self.team_id = team_id
     
-    def teams(self) -> any:
+    def team_info(self) -> any:
         url = f'{self.base}/apis/site/v2/sports/football/nfl/teams/{self.team_id}'
         r = requests.get(url, headers=self.hdr)
         return r.json()
